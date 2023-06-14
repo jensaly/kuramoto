@@ -1,4 +1,13 @@
+#=
+using Pkg
+Pkg.add("DifferentialEquations")
+Pkg.add("LinearAlgebra")
+Pkg.add("Plots")
+=#
+
 using DifferentialEquations
+using StaticArrays
+using LinearAlgebra
 
 
 function meshgrid(x, y)
@@ -9,19 +18,19 @@ function meshgrid(x, y)
 
 function kuramotoNO!(du, u, p, t)
     ω, K, N = p
-    θ = u
     θi, θj = meshgrid(u,u)
     phase_diff = sin.(θj - θi)
     summed = sum(phase_diff, dims = 2)
-    
-    du = ω + K * sum(phase_diff, dims=2)
+    for i = 1:N
+        du[i] = ω[i] + K * summed[i]
+    end
 end
 
 # Define initial conditions and parameters
 u0 = [0.0, 1.0, 2.0]   # Initial phase values
-K = 0.1e9
+K = 0.3e9
 N = 3
-p = [[6.6e9, 6.7e9, 7.9e9], K, N]    # Natural frequencies
+p = [[6.6e9, 6.7e9, 6.2e9], K, N]    # Natural frequencies
 
 
 tstart = 0.0     # Start time
@@ -36,7 +45,7 @@ prob = ODEProblem(kuramotoNO!, u0, tspan, p)
 sol = solve(prob, Tsit5(), abstol=1e-10,reltol=1e-10, dt=dt)
 
 # Access the solution
-t = range(tspan[1], tspan[2], length=10000)
+t = range(tspan[1], tspan[2], length=1000)
 θ1 = [sol(ti)[1] for ti in t]
 θ2 = [sol(ti)[2] for ti in t]
 θ3 = [sol(ti)[3] for ti in t]
