@@ -125,14 +125,19 @@ class Kuramoto:
 
 dtt = 1e-12
 Tt = 100e-9
-graph = np.ndarray((3,3))
+graph = np.ndarray((4,4))
 graph.fill(1)
 for i in range(len(graph)):
     graph[i][i] = 0.
-model = Kuramoto(coupling=0.3e9, dt=dtt, T=Tt, natfreqs=[6.6e9, 6.7e9, 6.2e9])
+graph[0][1] = 1/2.939
+graph[1][0] = 1/2.939
+graph[3][2] = 1/2.939
+graph[2][3] = 1/2.939
+print(graph)
+model = Kuramoto(coupling=0.3e9, dt=dtt, T=Tt, natfreqs=[6.6e9, 6.7e9, 6.2e9, 6.4e9])
 start_time = timeit.default_timer()
-for i in range(1, 10000):
-    act_mat = model.run(adj_mat=graph, angles_vec=[0,0,0])
+for i in range(1, 2):
+    act_mat = model.run(adj_mat=graph, angles_vec=[0,0,0,0])
 end_time = timeit.default_timer()
 print((end_time - start_time) / 10000, "seconds")
 

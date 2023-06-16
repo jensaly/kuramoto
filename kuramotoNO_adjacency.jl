@@ -42,7 +42,11 @@ end
 # Define initial conditions and parameters
 u0 = [0.0, 0.0, 0.0, 0.0]   # Initial phase values
 ω = [6.6e9, 6.7e9, 6.2e9, 6.4e9]
-K = 0.3e9
+K = [0.0 0.3e9 0.3e9 0.3e9;
+     0.3e9 0.0 0.3e9 0.3e9;
+     0.3e9 0.3e9 0.0 0.3e9; 
+     0.3e9 0.3e9 0.3e9 0.0]
+display(K)
 N = length(u0)
 p = [ω, K, N]    # Natural frequencies
 

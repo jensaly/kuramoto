@@ -1,18 +1,16 @@
 using DifferentialEquations
+using StaticArrays
 
-function vector_to_row_matrix(vector::Vector{T}, n::Int) where T
-    matrix = reduce(hcat, repeat([vector], n, 1))
-    return matrix
+function kuramotoNO_static!(u, p, t)
+    ω, K, N = p
+    θi = reduce(hcat, repeat([u], N, 1))
+    θj = transpose(θi)
+    phase_diff = sin.(θj - θi)
+    summed = SVector{3, Float32}(sum(phase_diff, dims = 2))
+    display(typeof(ω))
+    display(typeof(summed))
+    SVector{3, Float32}(ω + K * summed)
 end
 
-
-vector = [1, 2, 3, 4, 5]
-n = 5
-matrix1 = reduce(hcat, repeat([vector], n, 1))
-matrix2 = reducerepeat([vector], n, 1)
-
-display(matrix1)
-display(matrix2)
-#display(matrix2)
-
-print("Exit code 0")
+K = [1 2 3; 4 1 6; 7 8 1]
+display(K)
