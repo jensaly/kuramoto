@@ -10,39 +10,24 @@ using BenchmarkTools
 using StaticArrays
 #using LinearAlgebra
  
-function kuramotoNO(u, p, t)
+function kuramotoNO_static(u, p, t)
     ω, K, N = p
     θi = reduce(hcat, repeat([u], N, 1))
     θj = transpose(θi)
-    phase_diff = sin(θj - θi)
-    summed = sum(phase_diff, dims = 2)
-    #display(ω)
-    #display(K)
-    #display(phase_diff)
-    return SVector{4, Float64}(ω + K * summed)
-end
-
-#=
-function kuramotoNO!(du, u, p, t)
-    ω, K, N = p
-    θi, θj = meshgrid(u,u)
     phase_diff = sin.(θj - θi)
     summed = sum(phase_diff, dims = 2)
-    for i = 1:N
-        du[i] = ω[i] + K * summed[i]
-    end
+    return SVector{4, Float64}(ω + SVector{4, Float64}(K * summed))
 end
-=#
 
 # Define initial conditions and parameters
-u0 = SVector{4, Float64}([0.0, 0.0, 0.0, 0.0])  # Initial phase values
-ω = [6.6e9, 6.7e9, 6.2e9, 6.4e9]
-K = SMatrix{4,4, Float64}([0.0 0.3e9 0.3e9 0.3e9;
+u0 = SA[0.0, 0.0, 0.0, 0.0]  # Initial phase values
+ω = SA[6.6e9, 6.7e9, 6.2e9, 6.4e9]
+K = SA[0.0 0.3e9 0.3e9 0.3e9;
      0.3e9 0.0 0.3e9 0.3e9;
      0.3e9 0.3e9 0.0 0.3e9; 
-     0.3e9 0.3e9 0.3e9 0.0])
+     0.3e9 0.3e9 0.3e9 0.0]
 N = length(u0)
-p = SVector{3, Any}([ω, K, N])    # Natural frequencies
+p = SA[ω, K, N]    # Natural frequencies
 
 
 tstart = 0.0     # Start time
@@ -51,13 +36,14 @@ dt = 1e-12        # Time step
 
 tspan = (tstart, tend)  # Time span for simulation
 # Define the ODE problem
-prob = ODEProblem(kuramotoNO, u0, tspan, p)
+prob = ODEProblem(kuramotoNO_static, u0, tspan, p)
 
 # Solve the ODE problem
 #@btime sol = solve(prob, Tsit5(), abstol=1e-10,reltol=1e-10, dt=dt)
 @btime sol = solve(prob, Tsit5(), abstol=1e-10,reltol=1e-10, dt=dt)
 
 # Access the solution
+#=
 t = range(tspan[1], tspan[2], length=Int64(tend/dt))
 θ1 = [sol(ti)[1] for ti in t]
 θ2 = [sol(ti)[2] for ti in t]
@@ -84,3 +70,4 @@ plot!(f3, label="Oscillator 3")
 plot!(f4, label="Oscillator 4")
 xlabel!("Time")
 ylabel!("Frequency")
+=#

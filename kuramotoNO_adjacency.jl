@@ -10,34 +10,15 @@ using BenchmarkTools
 using StaticArrays
 #using LinearAlgebra
 
-
-function meshgrid(x, y)
-    X = [x for _ in y, x in x]
-    Y = [y for y in y, _ in x]
-    X, Y
- end
-
  
 function kuramotoNO!(du, u, p, t)
     ω, K, N = p
-    θi = reduce(hcat, repeat([u], N, 1))
+    θi = stack([u for j=1:4])
     θj = transpose(θi)
     phase_diff = sin.(θj - θi)
     summed = sum(phase_diff, dims = 2)
     du .= ω + K * summed
 end
-
-#=
-function kuramotoNO!(du, u, p, t)
-    ω, K, N = p
-    θi, θj = meshgrid(u,u)
-    phase_diff = sin.(θj - θi)
-    summed = sum(phase_diff, dims = 2)
-    for i = 1:N
-        du[i] = ω[i] + K * summed[i]
-    end
-end
-=#
 
 # Define initial conditions and parameters
 u0 = [0.0, 0.0, 0.0, 0.0]   # Initial phase values
@@ -46,7 +27,6 @@ K = [0.0 0.3e9 0.3e9 0.3e9;
      0.3e9 0.0 0.3e9 0.3e9;
      0.3e9 0.3e9 0.0 0.3e9; 
      0.3e9 0.3e9 0.3e9 0.0]
-display(K)
 N = length(u0)
 p = [ω, K, N]    # Natural frequencies
 
@@ -62,6 +42,7 @@ prob = ODEProblem(kuramotoNO!, u0, tspan, p)
 # Solve the ODE problem
 #@btime sol = solve(prob, Tsit5(), abstol=1e-10,reltol=1e-10, dt=dt)
 @btime sol = solve(prob, Tsit5(), abstol=1e-10,reltol=1e-10, dt=dt)
+
 
 # Access the solution
 t = range(tspan[1], tspan[2], length=1000)
