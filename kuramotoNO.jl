@@ -6,7 +6,8 @@ Pkg.add("Plots")
 =#
 
 using DifferentialEquations
-#using StaticArrays
+using BenchmarkTools
+using StaticArrays
 #using LinearAlgebra
 
 
@@ -19,14 +20,11 @@ function meshgrid(x, y)
  
 function kuramotoNO!(du, u, p, t)
     ω, K, N = p
-    #display(u)
     θi = reduce(hcat, repeat([u], N, 1))
     θj = transpose(θi)
     phase_diff = sin.(θj - θi)
     summed = sum(phase_diff, dims = 2)
-    for i = 1:N
-        du[i] = ω[i] + K * summed[i]
-    end
+    du .= ω + K * summed
 end
 
 #=
@@ -42,7 +40,7 @@ end
 =#
 
 # Define initial conditions and parameters
-u0 = [0.0, 1.0, 2.0]   # Initial phase values
+u0 = [0.0, 0.0, 0.0]   # Initial phase values
 ω = [6.6e9, 6.7e9, 6.2e9]
 K = 0.3e9
 N = length(u0)
@@ -58,7 +56,8 @@ tspan = (tstart, tend)  # Time span for simulation
 prob = ODEProblem(kuramotoNO!, u0, tspan, p)
 
 # Solve the ODE problem
-sol = solve(prob, Tsit5(), abstol=1e-10,reltol=1e-10, dt=dt)
+#@btime sol = solve(prob, Tsit5(), abstol=1e-10,reltol=1e-10, dt=dt)
+@btime sol = solve(prob, Tsit5(), abstol=1e-10,reltol=1e-10, dt=dt)
 
 # Access the solution
 t = range(tspan[1], tspan[2], length=1000)

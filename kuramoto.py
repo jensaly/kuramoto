@@ -2,6 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import odeint
 
+import timeit
+import time
+
 
 class Kuramoto:
 
@@ -121,19 +124,26 @@ class Kuramoto:
         return meanfreq
 
 dtt = 1e-12
-Tt = 1000e-9
+Tt = 100e-9
 graph = np.ndarray((3,3))
 graph.fill(1)
 for i in range(len(graph)):
     graph[i][i] = 0.
 model = Kuramoto(coupling=0.3e9, dt=dtt, T=Tt, natfreqs=[6.6e9, 6.7e9, 6.2e9])
-act_mat = model.run(adj_mat=graph, angles_vec=[0,0,0])
+start_time = timeit.default_timer()
+for i in range(1, 10000):
+    act_mat = model.run(adj_mat=graph, angles_vec=[0,0,0])
+end_time = timeit.default_timer()
+print((end_time - start_time) / 10000, "seconds")
+
+
+"""
 freq = [np.diff(act_mat[0]) / dtt, np.diff(act_mat[1]) / dtt, np.diff(act_mat[2]) / dtt]
 
 plt.plot(freq[0])
 plt.plot(freq[1])
 plt.plot(freq[2])
-
+"""
 
 
 

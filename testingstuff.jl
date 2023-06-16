@@ -8,11 +8,11 @@ end
 
 vector = [1, 2, 3, 4, 5]
 n = 5
-matrix1 = vector_to_row_matrix(vector, n)
-matrix2 = transpose(vector_to_row_matrix(vector, n))
+matrix1 = reduce(hcat, repeat([vector], n, 1))
+matrix2 = reducerepeat([vector], n, 1)
 
-display(vector)
-display(matrix1 - matrix2)
+display(matrix1)
+display(matrix2)
 #display(matrix2)
 
 print("Exit code 0")
