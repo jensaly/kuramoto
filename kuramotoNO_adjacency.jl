@@ -6,8 +6,7 @@ using StaticArrays
  
 function kuramotoNO!(du, u, p, t)
     ω, K, N = p
-    interactions = K * sum(sin.(u0' .- u0), dims=2)
-    du .= ω + interactions
+    du .= ω +  K * sum(sin.(u' .- u), dims=2)
 end
 
 # Define initial conditions and parameters

@@ -15,7 +15,7 @@ p = SA[ω, K, N]
 ω, K, N = p
 display(u0')
 display(u0)
-interactions = K * sum(sin.(u0' .- u0), dims=2)
+interactions = K * sum(sin.(u0' .- u0))
 display(typeof(ω))
 display(typeof(K * summed))
 display(ω + interactions)
