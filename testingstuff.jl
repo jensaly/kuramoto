@@ -1,21 +1,41 @@
 using DifferentialEquations
 using StaticArrays
 using BenchmarkTools
+using LinearAlgebra
 
 
-u0 = SA[0.0, 1.0, 2.0, 3.0]   # Initial phase values
-ω = SMatrix{4,1,Float64}([6.6e9, 6.7e9, 6.2e9, 6.4e9])
-K = SA[0.0 0.3e9 0.3e9 0.3e9;
-     0.3e9 0.0 0.3e9 0.3e9;
-     0.3e9 0.3e9 0.0 0.3e9; 
-     0.3e9 0.3e9 0.3e9 0.0]
-N = length(u0)
-p = SA[ω, K, N]
+function kuramotoNO!(du, u, p, t)
+    ω, K, N, uT, A1, A2, v1, v2 = p
 
-ω, K, N = p
-display(u0')
-display(u0)
-interactions = K * sum(sin.(u0' .- u0))
-display(typeof(ω))
-display(typeof(K * summed))
-display(ω + interactions)
+    uT .= u'
+
+    A1 .= uT .- u # Finding phase differences
+    A2 .= sin.(A1)
+
+    sum!(v1, A2) # Summing along sin(phase)
+    mul!(v2, K, v1) # Adjancency matrix -> Interaction term
+
+    du .= ω .+ v2 # Step
+end
+
+N = 4
+
+ω = rand(5.5e9:7.2e9, N)
+K = fill(0.3e9, N, N)
+K[diagind(K)] .= 0.0
+
+u = zeros(N)
+du = similar(u)
+
+# Preallocate
+uT = similar(u')
+A1 = similar(u, N, N)
+A2 = similar(u, N, N)
+v1 = similar(u)
+v2 = similar(u)
+
+p = (ω, K, N, uT, A1, A2, v1, v2)
+
+@btime kuramotoNO!($du, $u, $p, 0.0)
+
+print("Exit code 0")
