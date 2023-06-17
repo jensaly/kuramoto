@@ -18,7 +18,7 @@ function kuramotoNO(u, p, t)
 end
 
 N = 4
-K = 0.3e9
+K = 1e9
 
 u = @SVector zeros(N)
 du = @SVector zeros(N)
