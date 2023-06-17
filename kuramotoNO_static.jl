@@ -51,9 +51,9 @@ prob = ODEProblem(kuramotoNO, u0, tspan, p)
 
 # Solve the ODE problem
 #@btime sol = solve(prob, Tsit5(), abstol=1e-10,reltol=1e-10, dt=dt)
-sol = solve(prob, Tsit5(), abstol=1e-8,reltol=1e-8, dt=dt)
+@btime sol = solve(prob, Tsit5(), abstol=1e-8,reltol=1e-8, dt=dt)
 
-
+#=
 # Access the solution
 t = sol.t
 θ1 = sol[1, :]
@@ -72,3 +72,4 @@ plot!(t[2:end], f3, label="Oscillator 3")
 plot!(t[2:end], f4, label="Oscillator 4")
 xlabel!("Time")
 ylabel!("Frequency")
+=#

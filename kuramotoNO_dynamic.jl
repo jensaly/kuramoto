@@ -2,6 +2,7 @@ using DifferentialEquations
 using BenchmarkTools
 using StaticArrays
 using Plots
+using LinearAlgebra
  
 function kuramotoNO!(du, u, p, t)
     ω, K, N, uT, A1, A2, v1, v2 = p
@@ -9,7 +10,7 @@ function kuramotoNO!(du, u, p, t)
     uT .= u'
 
     A1 .= uT .- u # Finding phase differences
-    A2 .= sin.(A1)
+    A2 .= sin.(-A1)
 
     sum!(v1, A2) # Summing along sin(phase)
     mul!(v2, K, v1) # Adjancency matrix -> Interaction term
@@ -20,12 +21,13 @@ function kuramotoNO!(du, u, p, t)
 end
 
 N = 4
+K = 1e9
 
 u = zeros(4)
 du = similar(u)
 
 ω = [6.6e9, 6.7e9, 6.2e9, 6.4e9]
-K = fill(0.3e9, N, N)
+K = fill(K, N, N) / N
 K[diagind(K)] .= 0.0
 
 u0 = zeros(N)

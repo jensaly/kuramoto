@@ -63,7 +63,6 @@ class Kuramoto:
 
         angles_i, angles_j = np.meshgrid(angles_vec, angles_vec)
         interactions = adj_mat * np.sin(angles_j - angles_i)  # Aij * sin(j-i)
-        print(coupling * adj_mat)
         dxdt = self.natfreqs + coupling * interactions.sum(axis=0)  # sum over incoming interactions
         return dxdt
 
@@ -131,19 +130,18 @@ for i in range(len(graph)):
     graph[i][i] = 0.
 model = Kuramoto(coupling=0.3e9, dt=dtt, T=Tt, natfreqs=[6.6e9, 6.7e9, 6.2e9, 6.4e9])
 start_time = timeit.default_timer()
-for i in range(1, 2):
+for i in range(1, 1000):
     act_mat = model.run(adj_mat=graph, angles_vec=[0,0,0,0])
 end_time = timeit.default_timer()
-#print(act_mat[0])
-#print(np.diff(act_mat[0]))
-
+print((end_time - start_time)/1000, " seconds")
+"""
 freq = [np.diff(act_mat[0]) / dtt, np.diff(act_mat[1]) / dtt, np.diff(act_mat[2]) / dtt, np.diff(act_mat[3]) / dtt]
 
 plt.plot(freq[0])
 plt.plot(freq[1])
 plt.plot(freq[2])
 plt.plot(freq[3])
-
+"""
 
 
 
