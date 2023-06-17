@@ -2,8 +2,20 @@ using DifferentialEquations
 using StaticArrays
 using BenchmarkTools
 
-u = SA[0,1,2,3]
 
-@btime stack([u for j=1:4])
+u0 = SA[0.0, 1.0, 2.0, 3.0]   # Initial phase values
+ω = SMatrix{4,1,Float64}([6.6e9, 6.7e9, 6.2e9, 6.4e9])
+K = SA[0.0 0.3e9 0.3e9 0.3e9;
+     0.3e9 0.0 0.3e9 0.3e9;
+     0.3e9 0.3e9 0.0 0.3e9; 
+     0.3e9 0.3e9 0.3e9 0.0]
+N = length(u0)
+p = SA[ω, K, N]
 
-@btime reduce(hcat, repeat([u], N, 1))
+ω, K, N = p
+display(u0')
+display(u0)
+interactions = K * sum(sin.(u0' .- u0), dims=2)
+display(typeof(ω))
+display(typeof(K * summed))
+display(ω + interactions)

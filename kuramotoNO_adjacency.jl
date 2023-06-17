@@ -1,10 +1,3 @@
-#=
-using Pkg
-Pkg.add("DifferentialEquations")
-Pkg.add("LinearAlgebra")
-Pkg.add("Plots")
-=#
-
 using DifferentialEquations
 using BenchmarkTools
 using StaticArrays
@@ -13,11 +6,8 @@ using StaticArrays
  
 function kuramotoNO!(du, u, p, t)
     ω, K, N = p
-    θi = stack([u for j=1:4])
-    θj = transpose(θi)
-    phase_diff = sin.(θj - θi)
-    summed = sum(phase_diff, dims = 2)
-    du .= ω + K * summed
+    interactions = K * sum(sin.(u0' .- u0), dims=2)
+    du .= ω + interactions
 end
 
 # Define initial conditions and parameters

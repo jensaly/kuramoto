@@ -1,27 +1,21 @@
-#=
-using Pkg
-Pkg.add("DifferentialEquations")
-Pkg.add("LinearAlgebra")
-Pkg.add("Plots")
-=#
-
 using DifferentialEquations
 using BenchmarkTools
 using StaticArrays
 #using LinearAlgebra
+
  
-function kuramotoNO_static(u, p, t)
+function kuramotoNO(u, p, t)
     ω, K, N = p
-    θi = reduce(hcat, repeat([u], N, 1))
+    θi = stack([u for j=1:4])
     θj = transpose(θi)
     phase_diff = sin.(θj - θi)
     summed = sum(phase_diff, dims = 2)
-    return SVector{4, Float64}(ω + SVector{4, Float64}(K * summed))
+    return SVector{4, Float64}(ω + K * summed)
 end
 
 # Define initial conditions and parameters
-u0 = SA[0.0, 0.0, 0.0, 0.0]  # Initial phase values
-ω = SA[6.6e9, 6.7e9, 6.2e9, 6.4e9]
+u0 = SA[0.0, 0.0, 0.0, 0.0]   # Initial phase values
+ω = SMatrix{4,1,Float64}([6.6e9, 6.7e9, 6.2e9, 6.4e9])
 K = SA[0.0 0.3e9 0.3e9 0.3e9;
      0.3e9 0.0 0.3e9 0.3e9;
      0.3e9 0.3e9 0.0 0.3e9; 
@@ -36,26 +30,24 @@ dt = 1e-12        # Time step
 
 tspan = (tstart, tend)  # Time span for simulation
 # Define the ODE problem
-prob = ODEProblem(kuramotoNO_static, u0, tspan, p)
+prob = ODEProblem{false}(kuramotoNO, u0, tspan, p)
 
 # Solve the ODE problem
 #@btime sol = solve(prob, Tsit5(), abstol=1e-10,reltol=1e-10, dt=dt)
 @btime sol = solve(prob, Tsit5(), abstol=1e-10,reltol=1e-10, dt=dt)
 
+
 # Access the solution
-#=
-t = range(tspan[1], tspan[2], length=Int64(tend/dt))
+t = range(tspan[1], tspan[2], length=1000)
 θ1 = [sol(ti)[1] for ti in t]
 θ2 = [sol(ti)[2] for ti in t]
 θ3 = [sol(ti)[3] for ti in t]
-θ4 = [sol(ti)[4] for ti in t]
-
-#print(θ2)
+#θ4 = [sol(ti)[4] for ti in t]
 
 f1 = diff(θ1) / (t[2] - t[1]) / 1e9
 f2 = diff(θ2) / (t[2] - t[1]) / 1e9
 f3 = diff(θ3) / (t[2] - t[1]) / 1e9
-f4 = diff(θ4) / (t[2] - t[1]) / 1e9
+#f4 = diff(θ4) / (t[2] - t[1]) / 1e9
 
 # Plot the results
 using Plots
@@ -67,7 +59,6 @@ ylabel!("Phase differnece")
 plot(f1, label="Oscillator 1")
 plot!(f2, label="Oscillator 2")
 plot!(f3, label="Oscillator 3")
-plot!(f4, label="Oscillator 4")
+#plot!(f4, label="Oscillator 4")
 xlabel!("Time")
-ylabel!("Frequency")
-=#
+ylabel!("Phase differnece")
