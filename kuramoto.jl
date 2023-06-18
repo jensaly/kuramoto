@@ -3,7 +3,25 @@ using BenchmarkTools
 using StaticArrays
 using Plots
 using LinearAlgebra
+"""
+Kuramoto-model setup and preallocated member variables (N oscillators). This is mutable, and the differential equation does not have any memory, allowing for reuse of the same model, or for altering variables without creating a new instance.
 
+Constructor:
+
+u0 - Initial phase angles (radians) for each oscillator, given as Vector{Float64}
+
+ω - Natural frequencies (Hz) for each oscillator, given as Vector{Float64}
+
+K - Coupling constant (Hz), in the form of an adjacency matrix Matrix{Float64, Float64} (allows for non-uniform coupling)
+
+tstart - Start time of the simulation, given as Float64
+
+tend - End time of the simulation, given as Float64
+
+dt - Time step of the simulation, given as Float64
+
+All other variables are reserved for preallocation. Altering them will have no effect, and if it does you're deliberately trying to mess it up.
+"""
 mutable struct Kuramoto
     # Set elements
     u0::Vector{Float64}
@@ -12,7 +30,7 @@ mutable struct Kuramoto
     tstart::Float64
     tend::Float64
     dt::Float64
-    
+
     # Private (preallocated)
     tspan::Tuple{Float64, Float64}
     du::Vector{Float64}
@@ -40,10 +58,10 @@ function kuramotoNO_static!(du, u, p, t)
     nothing
 end
 
-function run_kuramoto_static(model::Kuramoto)
+function run_kuramoto_static(model::Kuramoto, abstol, reltol)
     p = (model.ω, model.K, length(model.u0), (model.u0)', model.A1, model.A2, model.v1, model.v2)
     prob = ODEProblem(kuramotoNO_static!, model.u0, model.tspan, p)
-    model.sol = solve(prob, Tsit5(), abstol=1e-10,reltol=1e-10, dt=model.dt)
+    model.sol = solve(prob, Tsit5(), abstol=abstol,reltol=reltol, dt=model.dt)
 end
 
 function kuramotoNO!(du, u, p, t)
@@ -62,10 +80,15 @@ function kuramotoNO!(du, u, p, t)
     nothing
 end
 
-function run_kuramoto(model::Kuramoto)
+"""
+Dynamic solver for the N-oscillator ordinary Kuramoto problem.
+
+model - Kuramoto model object, set up prior to the run.
+"""
+function run_kuramoto(model::Kuramoto, abstol, reltol)
     p = (model.ω, model.K, length(model.u0), (model.u0)', model.A1, model.A2, model.v1, model.v2)
     prob = ODEProblem(kuramotoNO!, model.u0, model.tspan, p)
-    model.sol = solve(prob, Tsit5(), abstol=1e-10,reltol=1e-10, dt=model.dt)
+    model.sol = solve(prob, Tsit5(), abstol=abstol,reltol=reltol, dt=model.dt)
 end
 
 function create_standard_K(k, N)

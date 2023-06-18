@@ -46,7 +46,7 @@ ax.text(100, 99.9, "Sync.", color='k', fontsize=18, horizontalalignment='center'
 #ax.text(97, 103, "Desync. region", color='w', fontsize=18, horizontalalignment='center')
 ax.set_aspect(0.8)
 
-fig.savefig('synchronization_map_99p5x100p5GHz_range_0p97GHz_coupling')
+#fig.savefig('synchronization_map_99p5x100p5GHz_range_0p97GHz_coupling')
 
 fig, ax = plt.subplots(1,1)
 

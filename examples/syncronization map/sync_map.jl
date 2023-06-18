@@ -1,4 +1,4 @@
-include("kuramotoNO_dynamic_struct.jl")
+include("../../kuramoto.jl")
 
 using Distributed
 using DelimitedFiles
@@ -27,13 +27,13 @@ K = 0.97e9
 u = zeros(4)
 
 ω = [6.6e9, 6.7e9, 6.2e9, 6.4e9]
-K = create_standard_K(K, N) * N
-
+K = create_standard_K(K, N)
+#=
 K[1,2] /= 3
 K[2,1] /= 3
 K[3,4] /= 3
 K[4,3] /= 3
-
+=#
 tstart = 0.0     # Start time
 tend = 100e-9      # End time
 dt = 1e-12        # Time step
@@ -53,14 +53,14 @@ natfreq2 = range(96e9, 104e9, 300)
 for i in 1:length(natfreq1)
     for j in 1:length(natfreq2)
         model.ω = [natfreq1[i], natfreq2[j], 99.5e9, 100.5e9]
-        run_kuramoto(model)
+        run_kuramoto(model, 1e-12, 1e-12)
         freq_diff[i,j] = output_freq_diff(model)
         #print(model.ω, "\n")
     end
     print(i)
 end
 
-filename = "matrix_output.txt"
+filename = "./matrix_output.txt"
 
 writedlm(filename, freq_diff, '\t')
 print("Exit code 0")
