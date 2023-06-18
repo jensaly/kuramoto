@@ -4,7 +4,7 @@ using StaticArrays
 using Plots
 using LinearAlgebra
  
-function kuramotoNO!(du, u, p, t)
+function kuramoto!(du, u, p, t)
     ω, K, N, uT, A1, A2, v1, v2 = p
 
     uT .= u'
@@ -52,7 +52,7 @@ tspan = (tstart, tend)  # Time span for simulation
 p = (ω, K, N, uT, A1, A2, v1, v2)
 
 # Define the ODE problem
-prob = ODEProblem(kuramotoNO!, u0, tspan, p)
+prob = ODEProblem(kuramoto!, u0, tspan, p)
 
 # Solve the ODE problem
 @btime sol = solve(prob, Tsit5(), abstol=1e-10,reltol=1e-10, dt=dt)
