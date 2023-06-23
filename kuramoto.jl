@@ -107,7 +107,7 @@ function kuramoto_stochastic(u, p, t)
     v1 = sum(A2, dims=2) # Summing along rows
     v2 = K * v1 # Adjancency matrix -> Interaction term
 
-    return SVector{4, Float64}(ω .+ v2)
+    return SVector{N, Float64}(ω .+ v2)
 end
 
 """
@@ -141,12 +141,12 @@ function create_standard_K(k, N)
     return K
 end
 
-function plot_model_frequencies(model::Kuramoto)
+function plot_model_frequencies(model::Kuramoto, step::Int64=1)
     sol = model.sol
     t = sol.t
     p = plot()
     for i in 1:length(model.ω)
-        plot!(p, t[2:end], diff(sol[i, :]) ./ diff(t) / 1e9, label="Oscillator " * string(i))
+        plot!(p, t[2:step:end], (diff(sol[i, :]) ./ diff(t))[1:step:end] / 1e9, label="Oscillator " * string(i), linewidth=5)
     end
     xlabel!(p, "Time")
     ylabel!(p, "Frequency")
