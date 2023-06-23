@@ -1,5 +1,4 @@
 using DifferentialEquations
-using BenchmarkTools
 using StaticArrays
 using Plots
 using LinearAlgebra
@@ -145,20 +144,10 @@ end
 function plot_model_frequencies(model::Kuramoto)
     sol = model.sol
     t = sol.t
-    θ1 = sol[1, :]
-    θ2 = sol[2, :]
-    θ3 = sol[3, :]
-    θ4 = sol[4, :]
-
-    f1 = diff(θ1) ./ diff(t) / 1e9
-    f2 = diff(θ2) ./ diff(t) / 1e9
-    f3 = diff(θ3) ./ diff(t) / 1e9
-    f4 = diff(θ4) ./ diff(t) / 1e9
-
-    p = plot(t[2:end], f1, label="Oscillator 1")
-    plot!(p, t[2:end], f2, label="Oscillator 2")
-    plot!(p, t[2:end], f3, label="Oscillator 3")
-    plot!(p, t[2:end], f4, label="Oscillator 4")
+    p = plot()
+    for i in 1:length(model.ω)
+        plot!(p, t[2:end], diff(sol[i, :]) ./ diff(t) / 1e9, label="Oscillator " * string(i))
+    end
     xlabel!(p, "Time")
     ylabel!(p, "Frequency")
     display(p)
