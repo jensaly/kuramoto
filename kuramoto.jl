@@ -51,8 +51,8 @@ function kuramoto_static!(du, u, p, t)
 
     uT .= u';
 
-    A1 .= uT .- u; # Finding phase differences
-    A2 .= sin.(-A1);
+    A1 .= u .- uT; # Finding phase differences
+    A2 .= sin.(A1);
 
     sum!(v1, A2); # Summing along sin(phase)
     mul!(v2, K, v1); # Adjancency matrix -> Interaction term
@@ -76,14 +76,7 @@ end
 function kuramoto!(du, u, p, t)
     ω, K, N = p
 
-    A1 = u' .- u; # Finding phase differences
-    A2 = sin.(-A1);
-
-    v1 = sum(A2, dims=2);
-
-    v2 = K * v1;
-
-    du .= ω .+ v2; # Step
+    du .= ω .+ K * sum(sin.(u .- u'), dims=2); # Step
 end
 
 """
