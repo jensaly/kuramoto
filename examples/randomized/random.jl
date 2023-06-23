@@ -5,7 +5,7 @@ include("../../kuramoto.jl")
 N = 100;
 u = rand(N) * 2 * pi;
 ω = rand(Uniform(6.2e9,7.2e9), N);
-K = 0.6e9;
+K = 1.7e9;
 K = create_standard_K(K, N);
 
 tstart = 0.0;    # Start time
@@ -18,3 +18,7 @@ model = Kuramoto(u, ω, K, tstart, tend, dt);
 run_kuramoto(model, 1e-12, 1e-12)
 
 plot_model_frequencies(model, 1, false)
+
+order = order_parameter(model)
+
+plot(vec(order))

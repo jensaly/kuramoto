@@ -169,3 +169,21 @@ function plot_model_phases(model::Kuramoto)
     ylabel!(p, "Frequency")
     display(p)
 end
+
+function order_parameter(model::Kuramoto)
+    sol = model.sol
+    N = length(model.u0)
+    cosmat = cos.(model.sol)
+    sinmat = sin.(model.sol)
+    sum_ = similar(cosmat)
+    fill!(sum_, 0.0)
+    for i in 1:N
+        for j in 1:N
+            if i != j
+                sum_[i,:] .= cosmat[i,:].*cosmat[j,:] .+ sinmat[i,:].*sinmat[j,:]
+            end
+        end
+    end
+    sum_ = sqrt.(N .+ sum(sum_, dims=1)) ./ N
+    return sum_
+end
