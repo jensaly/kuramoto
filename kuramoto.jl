@@ -152,3 +152,15 @@ function plot_model_frequencies(model::Kuramoto)
     ylabel!(p, "Frequency")
     display(p)
 end
+
+function plot_model_phases(model::Kuramoto)
+    sol = model.sol
+    t = sol.t
+    p = plot()
+    for i in 1:length(model.ω)
+        plot!(p, t, sol[i, :], label="Oscillator " * string(i))
+    end
+    xlabel!(p, "Time")
+    ylabel!(p, "Frequency")
+    display(p)
+end
