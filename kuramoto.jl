@@ -47,17 +47,17 @@ mutable struct Kuramoto
 end
 
 function kuramoto_static!(du, u, p, t)
-    ω, K, N, uT, A1, A2, v1, v2, D = p
+    ω, K, N, uT, A1, A2, v1, v2, D = p;
 
-    A1 .= u' .- u # Finding phase differences
-    A2 .= sin.(-A1)
+    uT .= u';
 
-    sum!(v1, A2) # Summing along sin(phase)
-    mul!(v2, K, v1) # Adjancency matrix -> Interaction term
+    A1 .= uT .- u; # Finding phase differences
+    A2 .= sin.(-A1);
 
-    du .= ω .+ v2 # Step
+    sum!(v1, A2); # Summing along sin(phase)
+    mul!(v2, K, v1); # Adjancency matrix -> Interaction term
 
-    nothing
+    du .= ω .+ v2; # Step
 end
 
 """
@@ -66,25 +66,24 @@ Static solver for the N-oscillator ordinary Kuramoto problem.
 model - Kuramoto model object, set up prior to the run.
 """
 function run_kuramoto_static(model::Kuramoto, abstol, reltol)
-    p = (model.ω, model.K, length(model.u0), (model.u0)', model.A1, model.A2, model.v1, model.v2, model.D)
-    prob = ODEProblem(kuramoto_static!, model.u0, model.tspan, p)
-    model.sol = solve(prob, Tsit5(), abstol=abstol,reltol=reltol, dt=model.dt)
+    p = (model.ω, model.K, length(model.u0), (model.u0)', model.A1, model.A2, model.v1, model.v2, model.D);
+    prob = ODEProblem(kuramoto_static!, model.u0, model.tspan, p);
+    model.sol = solve(prob, Tsit5(), abstol=abstol,reltol=reltol, dt=model.dt);
+
+    nothing
 end
 
 function kuramoto!(du, u, p, t)
-    ω, K, N, uT, A1, A2, v1, v2, D = p
+    ω, K, N = p
 
-    uT .= u'
+    A1 = u' .- u; # Finding phase differences
+    A2 = sin.(-A1);
 
-    A1 .= uT .- u # Finding phase differences
-    A2 .= sin.(-A1)
+    v1 = sum(A2, dims=2);
 
-    sum!(v1, A2) # Summing along sin(phase)
-    mul!(v2, K, v1) # Adjancency matrix -> Interaction term
+    v2 = K * v1;
 
-    du .= ω .+ v2 # Step
-
-    nothing
+    du .= ω .+ v2; # Step
 end
 
 """
@@ -93,9 +92,10 @@ Dynamic solver for the N-oscillator ordinary Kuramoto problem.
 model - Kuramoto model object, set up prior to the run.
 """
 function run_kuramoto(model::Kuramoto, abstol, reltol)
-    p = (model.ω, model.K, length(model.u0), (model.u0)', model.A1, model.A2, model.v1, model.v2, model.D)
-    prob = ODEProblem(kuramoto!, model.u0, model.tspan, p)
-    model.sol = solve(prob, Tsit5(), abstol=abstol,reltol=reltol, dt=model.dt)
+    p = (model.ω, model.K, length(model.u0), (model.u0)', model.A1, model.A2, model.v1, model.v2, model.D);
+    prob = ODEProblem(kuramoto!, model.u0, model.tspan, p);
+    model.sol = solve(prob, Tsit5(), abstol=abstol,reltol=reltol, dt=model.dt);
+    nothing
 end
 
 function kuramoto_stochastic(u, p, t)
@@ -167,7 +167,7 @@ function plot_model_phases(model::Kuramoto)
     end
     xlabel!(p, "Time")
     ylabel!(p, "Frequency")
-    display(p)
+    #display(p)
 end
 
 function order_parameter(model::Kuramoto)

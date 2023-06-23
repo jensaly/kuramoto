@@ -15,10 +15,12 @@ dt = 1e-12;        # Time step
 tspan = (tstart, tend);  # Time span for simulation
 model = Kuramoto(u, ω, K, tstart, tend, dt);
 
-run_kuramoto(model, 1e-12, 1e-12)
+@btime run_kuramoto_static(model, 1e-12, 1e-12);
 
+#=
 plot_model_frequencies(model, 1, false)
 
 order = order_parameter(model)
 
 plot(vec(order))
+=#
