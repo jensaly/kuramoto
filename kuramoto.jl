@@ -141,16 +141,21 @@ function create_standard_K(k, N)
     return K
 end
 
-function plot_model_frequencies(model::Kuramoto, step::Int64=1)
+function plot_model_frequencies(model::Kuramoto, step::Int64=1, legend::Bool=true)
     sol = model.sol
     t = sol.t
-    p = plot()
-    for i in 1:length(model.ω)
-        plot!(p, t[2:step:end], (diff(sol[i, :]) ./ diff(t))[1:step:end] / 1e9, label="Oscillator " * string(i), linewidth=5)
+    p = plot(legend=false)
+    if legend
+        for i in 1:length(model.ω)
+            plot!(p, t[2:step:end], (diff(sol[i, :]) ./ diff(t))[1:step:end] / 1e9, label="Oscillator " * string(i), linewidth=5)
+        end
+    else
+        for i in 1:length(model.ω)
+            plot!(p, t[2:step:end], (diff(sol[i, :]) ./ diff(t))[1:step:end] / 1e9, linewidth=5)
+        end
     end
     xlabel!(p, "Time")
     ylabel!(p, "Frequency")
-    display(p)
 end
 
 function plot_model_phases(model::Kuramoto)
