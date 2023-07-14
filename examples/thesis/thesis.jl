@@ -2,6 +2,7 @@ include("../../kuramoto.jl")
 
 using Distributed
 using DelimitedFiles
+using Statistics
 
 function output_freq_diff(model::Kuramoto)
     sol = model.sol
@@ -26,14 +27,15 @@ K = 0.97e9
 
 u = zeros(4)
 
-ω = [6.6e9, 6.7e9, 6.2e9, 6.4e9]
 K = create_standard_K(K, N)
-#=
-K[1,2] /= 3
-K[2,1] /= 3
-K[3,4] /= 3
-K[4,3] /= 3
-=#
+
+K[1,2] /= 2.939
+K[2,1] /= 2.939
+K[3,4] /= 2.939
+K[4,3] /= 2.939
+
+K *= 3
+
 tstart = 0.0     # Start time
 tend = 100e-9      # End time
 dt = 1e-12        # Time step
@@ -43,9 +45,9 @@ model = Kuramoto(u, ω, K, tstart, tend, dt)
 
 #display(K)
 
-freq_diff = zeros(300,300)
-natfreq1 = range(96e9, 104e9, 300)
-natfreq2 = range(96e9, 104e9, 300)
+freq_diff = zeros(200,200)
+natfreq1 = range(96e9, 104e9, 200)
+natfreq2 = range(96e9, 104e9, 200)
 
 #display(natfreq1)
 
@@ -53,14 +55,14 @@ natfreq2 = range(96e9, 104e9, 300)
 for i in 1:length(natfreq1)
     for j in 1:length(natfreq2)
         model.ω = [natfreq1[i], natfreq2[j], 99.5e9, 100.5e9]
-        run_kuramoto_static(model, 1e-12, 1e-12)
+        run_kuramoto_static(model, 1e-13, 1e-13)
         freq_diff[i,j] = output_freq_diff(model)
         #print(model.ω, "\n")
     end
     print(i)
 end
 
-filename = "examples/syncronization map/matrix_output.txt"
+filename = "examples/thesis/matrix_output.txt"
 
 writedlm(filename, freq_diff, '\t')
 print("Exit code 0")
