@@ -1,6 +1,7 @@
 using BenchmarkTools
 using Distributions
-include("../../kuramoto.jl")
+include("../../src/kuramoto.jl")
+include("../plotting_generic.jl")
 
 N = 100;
 u = rand(N) * 2 * pi;
@@ -17,10 +18,8 @@ model = Kuramoto(u, ω, K, tstart, tend, dt);
 
 @btime run_kuramoto_static(model, 1e-12, 1e-12);
 
-#=
 plot_model_frequencies(model, 1, false)
 
 order = order_parameter(model)
 
 plot(vec(order))
-=#

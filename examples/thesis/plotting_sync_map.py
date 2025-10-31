@@ -7,7 +7,7 @@ import matplotlib.pylab as pylab
 
 Tt = 100e-9
 dtt = 1e-11
-# 10 ns at a small time steo
+# 10 ns at a small time step
 
 time = np.linspace(0, Tt, int(Tt/dtt))
 
@@ -29,7 +29,7 @@ natfreqs2 = np.linspace(96e9, 104e9, 200)
 # Initializing the frequency difference matrix
 freqdiff = np.empty(shape=(len(natfreqs1), len(natfreqs2)))
 
-    # Load freqdiff file
+# Load freqdiff file
 freqdiff = np.genfromtxt('matrix_output.txt')
 
 

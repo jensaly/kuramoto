@@ -1,7 +1,8 @@
-using DifferentialEquations
-using StaticArrays
-using Plots
-using LinearAlgebra
+module Kuramoto
+
+using DifferentialEquations, StaticArraysm LinearAlgebra
+
+export KuramotoModel, run_static!, run_dynamic!, run_static_stochastic!, create_standard_K
 """
 Kuramoto-model setup and preallocated member variables (N oscillators). This is mutable, and the differential equation does not have any memory, allowing for reuse of the same model, or for altering variables without creating a new instance.
 
@@ -21,7 +22,7 @@ dt - Time step of the simulation, given as Float64
 
 All other variables are reserved for preallocation. Altering them will have no effect, and if it does you're deliberately trying to mess it up.
 """
-mutable struct Kuramoto
+mutable struct KuramotoModel
     # Set elements
     u0::Vector{Float64}
     ω::Vector{Float64}
@@ -39,11 +40,12 @@ mutable struct Kuramoto
     v1::Vector{Float64}
     v2::Vector{Float64}
     sol::Any
+end
 
-    Kuramoto(u0, ω, K, tstart, tend, dt) = new(u0, ω, K, tstart, tend, dt, 0, (tstart, tend),
-                                               zeros(N), zeros(N, N), zeros(N, N), zeros(N), zeros(N))
-    Kuramoto(u0, ω, K, tstart, tend, dt, D) = new(u0, ω, K, tstart, tend, dt, D, (tstart, tend),
-                                               zeros(N), zeros(N, N), zeros(N, N), zeros(N), zeros(N))
+function KuramotoModel(u0, ω, K, tstart, tend, dt; D=0.0)
+    N = length(u0)
+    return KuramotoModel(u0, ω, K, tstart, tend, dt, D, (tstart, tend),
+                         zeros(N), zeros(N, N), zeros(N, N), zeros(N), zeros(N), nothing)
 end
 
 function kuramoto_static!(du, u, p, t)
@@ -65,7 +67,7 @@ Static solver for the N-oscillator ordinary Kuramoto problem.
 
 model - Kuramoto model object, set up prior to the run.
 """
-function run_kuramoto_static(model::Kuramoto, abstol, reltol)
+function run_kuramoto_static(model::KuramotoModel, abstol, reltol)
     p = (model.ω, model.K, length(model.u0), (model.u0)', model.A1, model.A2, model.v1, model.v2, model.D);
     prob = ODEProblem(kuramoto_static!, model.u0, model.tspan, p);
     model.sol = solve(prob, Tsit5(), abstol=abstol,reltol=reltol, dt=model.dt);
@@ -84,7 +86,7 @@ Dynamic solver for the N-oscillator ordinary Kuramoto problem.
 
 model - Kuramoto model object, set up prior to the run.
 """
-function run_kuramoto(model::Kuramoto, abstol, reltol)
+function run_kuramoto(model::KuramotoModel, abstol, reltol)
     p = (model.ω, model.K, length(model.u0), (model.u0)', model.A1, model.A2, model.v1, model.v2, model.D);
     prob = ODEProblem(kuramoto!, model.u0, model.tspan, p);
     model.sol = solve(prob, Tsit5(), abstol=abstol,reltol=reltol, dt=model.dt);
@@ -118,7 +120,7 @@ Static and stochastic solver for the N-oscillator ordinary Kuramoto problem.
 
 model - Kuramoto model object, set up prior to the run.
 """
-function run_kuramoto_static_stochastic(model::Kuramoto, abstol, reltol)
+function run_kuramoto_static_stochastic(model::KuramotoModel, abstol, reltol)
     W = WienerProcess(0.0,0.0,0.0)
     N = length(model.u0)
     nV = @SVector fill(model.D, N)
@@ -132,51 +134,4 @@ function create_standard_K(k, N)
     K = fill(k, N, N) / N
     K[diagind(K)] .= 0.0
     return K
-end
-
-function plot_model_frequencies(model::Kuramoto, step::Int64=1, legend::Bool=true)
-    sol = model.sol
-    t = sol.t
-    p = plot(legend=false)
-    if legend
-        for i in 1:length(model.ω)
-            plot!(p, t[2:step:end], (diff(sol[i, :]) ./ diff(t))[1:step:end] / 1e9, label="Oscillator " * string(i), linewidth=5)
-        end
-    else
-        for i in 1:length(model.ω)
-            plot!(p, t[2:step:end], (diff(sol[i, :]) ./ diff(t))[1:step:end] / 1e9, linewidth=5)
-        end
-    end
-    xlabel!(p, "Time")
-    ylabel!(p, "Frequency")
-end
-
-function plot_model_phases(model::Kuramoto)
-    sol = model.sol
-    t = sol.t
-    p = plot()
-    for i in 1:length(model.ω)
-        plot!(p, t, sol[i, :], label="Oscillator " * string(i))
-    end
-    xlabel!(p, "Time")
-    ylabel!(p, "Frequency")
-    #display(p)
-end
-
-function order_parameter(model::Kuramoto)
-    sol = model.sol
-    N = length(model.u0)
-    cosmat = cos.(model.sol)
-    sinmat = sin.(model.sol)
-    sum_ = similar(cosmat)
-    fill!(sum_, 0.0)
-    for i in 1:N
-        for j in 1:N
-            if i != j
-                sum_[i,:] .= cosmat[i,:].*cosmat[j,:] .+ sinmat[i,:].*sinmat[j,:]
-            end
-        end
-    end
-    sum_ = sqrt.(N .+ sum(sum_, dims=1)) ./ N
-    return sum_
 end

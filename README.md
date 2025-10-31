@@ -15,16 +15,24 @@ The code provides a struct for the Kuramoto model setup, where you are expected 
 
 It present you with a selection of fuctions, each of which are related to a different methods. The variations are dynamic and static solvers, the latter of which attempts to preallocate the intermediate steps of the solution to minimize the time spent allocating new data. For small problems, ~4 oscillators, this can result in result in the simulation being one order of magnitude faster. For large problems, >100 oscillators, the benefits of a static solver decrease, and it may be better to switch to a dynamic solver. Additionally, you have to manually tell the code to use a stochastic solver, as it will not detect it even if D != 0.
 
+## Julia implementation
+
+Found in the Julamoto-folder.
+
+## Python bindings
+
+Found in the PyJulamoto-folder.
+
 ## Examples
 
 We provide several examples for use of the Kuramoto model, located within the 'examples/' folder:
 
-- A simple example covered in 'basic', which simply sets up two oscillators with the same initial phase and a distribution of initial conditions, and runs it for 100 ns. These oscillators synchronize.
+- Basic: A simple example which simply sets up two oscillators with the same initial phase and a distribution of initial conditions, and runs it for 100 ns. These oscillators shall synchronize.
+
+- Garg et. al: A synchronization map subject to a non-uniform adjacency matrix. This is inspired by the work [Garg et. al.](https://iopscience.iop.org/article/10.1088/2634-4386/ac3258/pdf), who in part used the Kuramoto model in the creation of an oscillatory neural network. The parameters closely match theirs, including the weaker coupling between the input-input and output-outout pairs of oscillators. By first running the Julia script to generate the garg.txt output file, it is shown that the output of our Kuramoto model implementation matches that expected by them. It should also be noted that the coupling constants they report are post-normalization, which for our implementation necessitated that the K matrix must be multiplied by N.
+
+- Randomized: A large simulation of 100 oscillators connected all-to-all uniformly, subject to randomized natural frequencies and initial phases, solved statically.
+
+- Simple Stochastic: A 2-oscillator stochastic simulation. This is comapred to an equivalent non-stochastic simulation (all parameters are identical, but D = 0) to show the effect of noise on the synchronization.
 
 - A synchronization map. This is created via a system of 4 oscillators. Two oscillators are designated as 'input' and two as 'output'. The coupling constant is fixed to a certain value. Then, while the natural frequency of the 'output' oscillators is kept constant, the 'input' oscillators have their natural frequencies varied in a given range in a quantized way, one combination of input frequencies at a time. The example then measures the synchronization of the output oscillators as a function of the input natural frequencies. This is called a synchronization map.
-
-- A synchronization map subject to a non-uniform adjacency matrix. This is inspired by the work [Garg et. al.](https://iopscience.iop.org/article/10.1088/2634-4386/ac3258/pdf), who in part used the Kuramoto model in the creation of an oscillatory neural network. The parameters closely match theirs, including the weaker coupling between the input-input and output-outout pairs of oscillators. By first running the Julia script to generate the garg.txt output file, it is shown that the output of our Kuramoto model implementation matches that expected by them. It should also be noted that the coupling constants they report are post-normalization, which for our implementation necessitated that the K matrix must be multiplied by N.
-
-- A simple, 2 oscillator stochastic simulation. This is comapred to an equivalent non-stochastic simulation (all parameters are identical, but D = 0) to show the effect of noise on the synchronization.
-
-- A large simulation of 100 oscillators connected all-to-all uniformly, subject to randomized natural frequencies and initial phases.

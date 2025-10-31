@@ -1,4 +1,4 @@
-include("../../kuramoto.jl")
+include("../../src/kuramoto.jl")
 
 N = 2
 K = 3.0e9

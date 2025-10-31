@@ -1,5 +1,6 @@
 using BenchmarkTools
-include("../../kuramoto.jl")
+include("../../src/kuramoto.jl")
+include("../plotting_generic.jl")
 
 N = 2
 u = zeros(N);
@@ -16,4 +17,4 @@ model = Kuramoto(u, ω, K, tstart, tend, dt);
 
 @btime run_kuramoto(model, 1e-12, 1e-12);
 
-#plot_model_frequencies(model)
+plot_model_frequencies(model)

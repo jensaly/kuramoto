@@ -1,10 +1,10 @@
-include("../../kuramoto.jl")
+include("../../src/kuramoto.jl")
 
 using Distributed
 using DelimitedFiles
 using Statistics
 
-function output_freq_diff(model::Kuramoto)
+function output_freq_diff(model::KuramotoModel)
     sol = model.sol
     t = sol.t
     θ1 = sol[1, :]
