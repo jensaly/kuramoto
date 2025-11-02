@@ -1,8 +1,8 @@
 module Kuramoto
 
-using DifferentialEquations, StaticArraysm LinearAlgebra
+using DifferentialEquations, StaticArrays, LinearAlgebra
 
-export KuramotoModel, run_static!, run_dynamic!, run_static_stochastic!, create_standard_K
+export KuramotoModel, run_static!, run_dynamic!, run_static_stochastic!, create_standard_K, run_kuramoto, run_kuramoto_static
 """
 Kuramoto-model setup and preallocated member variables (N oscillators). This is mutable, and the differential equation does not have any memory, allowing for reuse of the same model, or for altering variables without creating a new instance.
 
@@ -134,4 +134,6 @@ function create_standard_K(k, N)
     K = fill(k, N, N) / N
     K[diagind(K)] .= 0.0
     return K
+end
+
 end

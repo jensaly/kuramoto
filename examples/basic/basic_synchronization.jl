@@ -1,5 +1,6 @@
 using BenchmarkTools
-include("../../src/kuramoto.jl")
+include("../../Kuramoto/src/Kuramoto.jl")
+using .Kuramoto
 include("../plotting_generic.jl")
 
 N = 2
@@ -13,8 +14,8 @@ tend = 100e-9      # End time
 dt = 1e-13        # Time step
 
 tspan = (tstart, tend);  # Time span for simulation
-model = Kuramoto(u, ω, K, tstart, tend, dt);
+model = KuramotoModel(u, ω, K, tstart, tend, dt);
 
-@btime run_kuramoto(model, 1e-12, 1e-12);
+@btime run_kuramoto_static(model, 1e-12, 1e-12);
 
 plot_model_frequencies(model)

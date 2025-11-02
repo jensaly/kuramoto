@@ -36,3 +36,8 @@ We provide several examples for use of the Kuramoto model, located within the 'e
 - Simple Stochastic: A 2-oscillator stochastic simulation. This is comapred to an equivalent non-stochastic simulation (all parameters are identical, but D = 0) to show the effect of noise on the synchronization.
 
 - A synchronization map. This is created via a system of 4 oscillators. Two oscillators are designated as 'input' and two as 'output'. The coupling constant is fixed to a certain value. Then, while the natural frequency of the 'output' oscillators is kept constant, the 'input' oscillators have their natural frequencies varied in a given range in a quantized way, one combination of input frequencies at a time. The example then measures the synchronization of the output oscillators as a function of the input natural frequencies. This is called a synchronization map.
+
+## Python
+The library can be invoked in Python. For this, Julia must be installed and be part of your system path variable.
+
+Add StaticArrays, DifferentialEquations to your global Julia manifest
