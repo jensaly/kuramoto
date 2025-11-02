@@ -1,4 +1,6 @@
-include("../../src/kuramoto.jl")
+include("../../Kuramoto/src/Kuramoto.jl")
+using .Kuramoto
+using Statistics
 include("../plotting_generic.jl")
 
 using Distributed
@@ -43,7 +45,7 @@ tend = 100e-9      # End time
 dt = 1e-12        # Time step
 
 tspan = (tstart, tend)  # Time span for simulation
-model = Kuramoto(u, ω, K, tstart, tend, dt)
+model = KuramotoModel(u, ω, K, tstart, tend, dt)
 
 freq_diff = zeros(300,300)
 natfreq1 = range(6.20e9, 7.20e9, 300)
@@ -61,5 +63,3 @@ end
 filename = "examples/garg et al/garg.txt"
 
 writedlm(filename, freq_diff, '\t')
-print("Exit code 0")
-

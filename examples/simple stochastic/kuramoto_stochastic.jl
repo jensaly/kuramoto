@@ -1,4 +1,5 @@
-include("../../src/kuramoto.jl")
+include("../../Kuramoto/src/Kuramoto.jl")
+using .Kuramoto
 
 N = 2
 K = 3.0e9

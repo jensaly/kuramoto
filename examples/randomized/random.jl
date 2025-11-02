@@ -1,6 +1,7 @@
 using BenchmarkTools
 using Distributions
-include("../../src/kuramoto.jl")
+include("../../Kuramoto/src/Kuramoto.jl")
+using .Kuramoto
 include("../plotting_generic.jl")
 
 N = 100;
