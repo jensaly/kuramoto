@@ -1,0 +1,11 @@
+[tool.setuptools]
+packages = ["pyjulamoto"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pyjulamoto"
+version = "0.1.0"
+dependencies = ["julia", "numpy"]

@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "pyjulamoto"
 version = "0.1.0"
 description = "Python interface to a Julia Kuramoto model"
-authors = [{name="Your Name", email="you@example.com"}]
+authors = [{name="Jens Anker Lyngaas", email="jens.lyngaas@gmail.com"}]
 readme = "README.md"
 requires-python = ">=3.9"
 dependencies = ["numpy", "julia"]

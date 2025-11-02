@@ -1,0 +1,9 @@
+name = "Kuramoto"
+uuid = "f7cde567-5a8f-4cb4-a6c5-9d9f0c8a2d22"
+authors = ["Your Name <you@example.com>"]
+version = "0.1.0"
+
+[deps]
+DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"

@@ -1,5 +1,5 @@
 import numpy as np
-from pykuramoto.core import Kuramoto
+from pyjulamoto import Kuramoto
 
 # Parameters
 N = 10  # number of oscillators
@@ -8,7 +8,6 @@ tend = 10.0
 dt = 0.01
 abstol = 1e-6
 reltol = 1e-3
-D = 0.1  # optional stochastic noise strength
 
 # Initial conditions
 u0 = np.random.rand(N) * 2 * np.pi  # random initial phases
@@ -19,7 +18,7 @@ K = np.ones((N, N)) / N
 np.fill_diagonal(K, 0.0)
 
 # Create Kuramoto model
-model = Kuramoto(u0, omega, K, tstart, tend, dt, D=D)
+model = Kuramoto(u0, omega, K, tstart, tend, dt)
 
 # Run static solver
 model.run_static(abstol=abstol, reltol=reltol)
